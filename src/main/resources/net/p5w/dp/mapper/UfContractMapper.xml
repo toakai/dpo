@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.p5w.dp.mapper.UfContractMapper">
+  <resultMap id="BaseResultMap" type="net.p5w.dp.entity.UfContract">
+    <!--@mbg.generated-->
+    <!--@Table uf_contract-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="requestId" jdbcType="INTEGER" property="requestid" />
+    <result column="modedatacreater" jdbcType="INTEGER" property="modedatacreater" />
+    <result column="modedatacreatertype" jdbcType="INTEGER" property="modedatacreatertype" />
+    <result column="modedatacreatedate" jdbcType="VARCHAR" property="modedatacreatedate" />
+    <result column="modedatacreatetime" jdbcType="VARCHAR" property="modedatacreatetime" />
+    <result column="htmc" jdbcType="VARCHAR" property="htmc" />
+    <result column="sqr" jdbcType="INTEGER" property="sqr" />
+    <result column="htlx" jdbcType="INTEGER" property="htlx" />
+    <result column="bz" jdbcType="LONGVARCHAR" property="bz" />
+    <result column="htze" jdbcType="DECIMAL" property="htze" />
+    <result column="dxje" jdbcType="VARCHAR" property="dxje" />
+    <result column="lxr" jdbcType="VARCHAR" property="lxr" />
+    <result column="sj" jdbcType="VARCHAR" property="sj" />
+    <result column="htbh" jdbcType="VARCHAR" property="htbh" />
+    <result column="htmb" jdbcType="VARCHAR" property="htmb" />
+    <result column="qsrq" jdbcType="CHAR" property="qsrq" />
+    <result column="ksrq" jdbcType="CHAR" property="ksrq" />
+    <result column="jsrq" jdbcType="CHAR" property="jsrq" />
+    <result column="hbht" jdbcType="VARCHAR" property="hbht" />
+    <result column="modedatamodifier" jdbcType="INTEGER" property="modedatamodifier" />
+    <result column="modedatamodifydatetime" jdbcType="VARCHAR" property="modedatamodifydatetime" />
+    <result column="khmc" jdbcType="INTEGER" property="khmc" />
+    <result column="htlx2" jdbcType="INTEGER" property="htlx2" />
+    <result column="lxr2" jdbcType="INTEGER" property="lxr2" />
+    <result column="khlxr" jdbcType="INTEGER" property="khlxr" />
+    <result column="gllc" jdbcType="INTEGER" property="gllc" />
+    <result column="htyfkje" jdbcType="DECIMAL" property="htyfkje" />
+    <result column="htsyyfje" jdbcType="DECIMAL" property="htsyyfje" />
+    <result column="htykpje" jdbcType="DECIMAL" property="htykpje" />
+    <result column="qybm" jdbcType="INTEGER" property="qybm" />
+    <result column="fzr" jdbcType="LONGVARCHAR" property="fzr" />
+    <result column="sjfwzt" jdbcType="INTEGER" property="sjfwzt" />
+    <result column="ljkp" jdbcType="DECIMAL" property="ljkp" />
+    <result column="ljsk" jdbcType="DECIMAL" property="ljsk" />
+    <result column="ykpwhk" jdbcType="DECIMAL" property="ykpwhk" />
+    <result column="wkp" jdbcType="DECIMAL" property="wkp" />
+    <result column="htlb" jdbcType="INTEGER" property="htlb" />
+    <result column="htscskje" jdbcType="DECIMAL" property="htscskje" />
+    <result column="htfzr" jdbcType="INTEGER" property="htfzr" />
+    <result column="qyf" jdbcType="INTEGER" property="qyf" />
+    <result column="sfxnht" jdbcType="INTEGER" property="sfxnht" />
+    <result column="lczt" jdbcType="INTEGER" property="lczt" />
+    <result column="sqrq" jdbcType="CHAR" property="sqrq" />
+    <result column="gzrq" jdbcType="CHAR" property="gzrq" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, requestId, modedatacreater, modedatacreatertype, modedatacreatedate, modedatacreatetime, 
+    htmc, sqr, htlx, bz, htze, dxje, lxr, sj, htbh, htmb, qsrq, ksrq, jsrq, hbht, modedatamodifier, 
+    modedatamodifydatetime, khmc, htlx2, lxr2, khlxr, gllc, htyfkje, htsyyfje, htykpje, 
+    qybm, fzr, sjfwzt, ljkp, ljsk, ykpwhk, wkp, htlb, htscskje, htfzr, qyf, sfxnht, lczt, 
+    sqrq, gzrq
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from uf_contract
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="net.p5w.dp.entity.UfContract" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into uf_contract
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="requestid != null">
+        requestId,
+      </if>
+      <if test="modedatacreater != null">
+        modedatacreater,
+      </if>
+      <if test="modedatacreatertype != null">
+        modedatacreatertype,
+      </if>
+      <if test="modedatacreatedate != null">
+        modedatacreatedate,
+      </if>
+      <if test="modedatacreatetime != null">
+        modedatacreatetime,
+      </if>
+      <if test="htmc != null">
+        htmc,
+      </if>
+      <if test="sqr != null">
+        sqr,
+      </if>
+      <if test="htlx != null">
+        htlx,
+      </if>
+      <if test="bz != null">
+        bz,
+      </if>
+      <if test="htze != null">
+        htze,
+      </if>
+      <if test="dxje != null">
+        dxje,
+      </if>
+      <if test="lxr != null">
+        lxr,
+      </if>
+      <if test="sj != null">
+        sj,
+      </if>
+      <if test="htbh != null">
+        htbh,
+      </if>
+      <if test="htmb != null">
+        htmb,
+      </if>
+      <if test="qsrq != null">
+        qsrq,
+      </if>
+      <if test="ksrq != null">
+        ksrq,
+      </if>
+      <if test="jsrq != null">
+        jsrq,
+      </if>
+      <if test="hbht != null">
+        hbht,
+      </if>
+      <if test="modedatamodifier != null">
+        modedatamodifier,
+      </if>
+      <if test="modedatamodifydatetime != null">
+        modedatamodifydatetime,
+      </if>
+      <if test="khmc != null">
+        khmc,
+      </if>
+      <if test="htlx2 != null">
+        htlx2,
+      </if>
+      <if test="lxr2 != null">
+        lxr2,
+      </if>
+      <if test="khlxr != null">
+        khlxr,
+      </if>
+      <if test="gllc != null">
+        gllc,
+      </if>
+      <if test="htyfkje != null">
+        htyfkje,
+      </if>
+      <if test="htsyyfje != null">
+        htsyyfje,
+      </if>
+      <if test="htykpje != null">
+        htykpje,
+      </if>
+      <if test="qybm != null">
+        qybm,
+      </if>
+      <if test="fzr != null">
+        fzr,
+      </if>
+      <if test="sjfwzt != null">
+        sjfwzt,
+      </if>
+      <if test="ljkp != null">
+        ljkp,
+      </if>
+      <if test="ljsk != null">
+        ljsk,
+      </if>
+      <if test="ykpwhk != null">
+        ykpwhk,
+      </if>
+      <if test="wkp != null">
+        wkp,
+      </if>
+      <if test="htlb != null">
+        htlb,
+      </if>
+      <if test="htscskje != null">
+        htscskje,
+      </if>
+      <if test="htfzr != null">
+        htfzr,
+      </if>
+      <if test="qyf != null">
+        qyf,
+      </if>
+      <if test="sfxnht != null">
+        sfxnht,
+      </if>
+      <if test="lczt != null">
+        lczt,
+      </if>
+      <if test="sqrq != null">
+        sqrq,
+      </if>
+      <if test="gzrq != null">
+        gzrq,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="requestid != null">
+        #{requestid,jdbcType=INTEGER},
+      </if>
+      <if test="modedatacreater != null">
+        #{modedatacreater,jdbcType=INTEGER},
+      </if>
+      <if test="modedatacreatertype != null">
+        #{modedatacreatertype,jdbcType=INTEGER},
+      </if>
+      <if test="modedatacreatedate != null">
+        #{modedatacreatedate,jdbcType=VARCHAR},
+      </if>
+      <if test="modedatacreatetime != null">
+        #{modedatacreatetime,jdbcType=VARCHAR},
+      </if>
+      <if test="htmc != null">
+        #{htmc,jdbcType=VARCHAR},
+      </if>
+      <if test="sqr != null">
+        #{sqr,jdbcType=INTEGER},
+      </if>
+      <if test="htlx != null">
+        #{htlx,jdbcType=INTEGER},
+      </if>
+      <if test="bz != null">
+        #{bz,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="htze != null">
+        #{htze,jdbcType=DECIMAL},
+      </if>
+      <if test="dxje != null">
+        #{dxje,jdbcType=VARCHAR},
+      </if>
+      <if test="lxr != null">
+        #{lxr,jdbcType=VARCHAR},
+      </if>
+      <if test="sj != null">
+        #{sj,jdbcType=VARCHAR},
+      </if>
+      <if test="htbh != null">
+        #{htbh,jdbcType=VARCHAR},
+      </if>
+      <if test="htmb != null">
+        #{htmb,jdbcType=VARCHAR},
+      </if>
+      <if test="qsrq != null">
+        #{qsrq,jdbcType=CHAR},
+      </if>
+      <if test="ksrq != null">
+        #{ksrq,jdbcType=CHAR},
+      </if>
+      <if test="jsrq != null">
+        #{jsrq,jdbcType=CHAR},
+      </if>
+      <if test="hbht != null">
+        #{hbht,jdbcType=VARCHAR},
+      </if>
+      <if test="modedatamodifier != null">
+        #{modedatamodifier,jdbcType=INTEGER},
+      </if>
+      <if test="modedatamodifydatetime != null">
+        #{modedatamodifydatetime,jdbcType=VARCHAR},
+      </if>
+      <if test="khmc != null">
+        #{khmc,jdbcType=INTEGER},
+      </if>
+      <if test="htlx2 != null">
+        #{htlx2,jdbcType=INTEGER},
+      </if>
+      <if test="lxr2 != null">
+        #{lxr2,jdbcType=INTEGER},
+      </if>
+      <if test="khlxr != null">
+        #{khlxr,jdbcType=INTEGER},
+      </if>
+      <if test="gllc != null">
+        #{gllc,jdbcType=INTEGER},
+      </if>
+      <if test="htyfkje != null">
+        #{htyfkje,jdbcType=DECIMAL},
+      </if>
+      <if test="htsyyfje != null">
+        #{htsyyfje,jdbcType=DECIMAL},
+      </if>
+      <if test="htykpje != null">
+        #{htykpje,jdbcType=DECIMAL},
+      </if>
+      <if test="qybm != null">
+        #{qybm,jdbcType=INTEGER},
+      </if>
+      <if test="fzr != null">
+        #{fzr,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="sjfwzt != null">
+        #{sjfwzt,jdbcType=INTEGER},
+      </if>
+      <if test="ljkp != null">
+        #{ljkp,jdbcType=DECIMAL},
+      </if>
+      <if test="ljsk != null">
+        #{ljsk,jdbcType=DECIMAL},
+      </if>
+      <if test="ykpwhk != null">
+        #{ykpwhk,jdbcType=DECIMAL},
+      </if>
+      <if test="wkp != null">
+        #{wkp,jdbcType=DECIMAL},
+      </if>
+      <if test="htlb != null">
+        #{htlb,jdbcType=INTEGER},
+      </if>
+      <if test="htscskje != null">
+        #{htscskje,jdbcType=DECIMAL},
+      </if>
+      <if test="htfzr != null">
+        #{htfzr,jdbcType=INTEGER},
+      </if>
+      <if test="qyf != null">
+        #{qyf,jdbcType=INTEGER},
+      </if>
+      <if test="sfxnht != null">
+        #{sfxnht,jdbcType=INTEGER},
+      </if>
+      <if test="lczt != null">
+        #{lczt,jdbcType=INTEGER},
+      </if>
+      <if test="sqrq != null">
+        #{sqrq,jdbcType=CHAR},
+      </if>
+      <if test="gzrq != null">
+        #{gzrq,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.p5w.dp.mapper.AuthClientMapper">
+    <resultMap id="BaseResultMap" type="net.p5w.dp.entity.AuthClient">
+        <!--@mbg.generated-->
+        <!--@Table p5w_auth_client-->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="app_key" jdbcType="VARCHAR" property="appKey"/>
+        <result column="app_secret" jdbcType="VARCHAR" property="appSecret"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, app_key, app_secret, `status`, create_time
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from p5w_auth_client
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <update id="updateByPrimaryKey" parameterType="net.p5w.dp.entity.AuthClient">
+        <!--@mbg.generated-->
+        update p5w_auth_client
+        set app_key = #{appKey,jdbcType=VARCHAR},
+        app_secret = #{appSecret,jdbcType=VARCHAR},
+        `status` = #{status,jdbcType=TINYINT},
+        create_time = #{createTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <select id="getByAppKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from p5w_auth_client
+        where app_key = #{appKey}
+    </select>
+</mapper>

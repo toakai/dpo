@@ -1,0 +1,7 @@
+spring:
+  config:
+    import:
+      - classpath:application-@profiles.active@-db.yml
+      - classpath:application-@profiles.active@-schedule.yml
+#      - optional:file:./resources/application-@profiles.active@-db.yml
+#      - optional:file:./resources/application-@profiles.active@-schedule.yml

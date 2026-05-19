@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.p5w.dp.mapper.UserMapper">
+    <resultMap id="BaseResultMap" type="net.p5w.dp.entity.User">
+        <!--@mbg.generated-->
+        <!--@Table p5w_user-->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="username" jdbcType="VARCHAR" property="username"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="real_name" jdbcType="VARCHAR" property="realName"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, username, `password`, real_name, phone, create_time, update_time
+    </sql>
+    <select id="getById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from p5w_user
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteById" parameterType="java.lang.Long">
+        <!--@mbg.generated-->
+        delete from p5w_user
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="net.p5w.dp.entity.User" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into p5w_user (username, `password`, real_name,
+        phone, create_time
+        )
+        values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{realName,jdbcType=VARCHAR},
+        #{phone,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+    <update id="updateById" parameterType="net.p5w.dp.entity.User">
+        <!--@mbg.generated-->
+        update p5w_user
+        set username = #{username,jdbcType=VARCHAR},
+        `password` = #{password,jdbcType=VARCHAR},
+        real_name = #{realName,jdbcType=VARCHAR},
+        phone = #{phone,jdbcType=VARCHAR},
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <select id="list" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM p5w_user
+    </select>
+    <!-- 分页查询 -->
+    <select id="selectUserPage" resultType="net.p5w.dp.entity.User">
+        select
+        <include refid="Base_Column_List"/>
+        from p5w_user
+        limit #{offset}, #{size}
+    </select>
+
+    <!-- 查询总数 -->
+    <select id="selectUserCount" resultType="long">
+        select count(*) from p5w_user
+    </select>
+</mapper>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.p5w.dp.mapper.OrderMapper">
+    <resultMap id="BaseResultMap" type="net.p5w.dp.entity.Order">
+        <!--@mbg.generated-->
+        <!--@Table p5w_order-->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="order_no" jdbcType="VARCHAR" property="orderNo"/>
+        <result column="amount" jdbcType="DECIMAL" property="amount"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, user_id, order_no, amount, `status`, create_time, update_time
+    </sql>
+    <select id="getById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from p5w_order
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteById" parameterType="java.lang.Long">
+        <!--@mbg.generated-->
+        delete from p5w_order
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="net.p5w.dp.entity.Order" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into p5w_order (user_id, order_no, amount,
+        `status`, create_time
+        )
+        values (#{userId,jdbcType=BIGINT}, #{orderNo,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL},
+        #{status,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+    <update id="updateById" parameterType="net.p5w.dp.entity.Order">
+        <!--@mbg.generated-->
+        update p5w_order
+        set user_id = #{userId,jdbcType=BIGINT},
+        order_no = #{orderNo,jdbcType=VARCHAR},
+        amount = #{amount,jdbcType=DECIMAL},
+        `status` = #{status,jdbcType=TINYINT},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <select id="list" resultMap="BaseResultMap">
+        SELECT * FROM p5w_order
+    </select>
+</mapper>
