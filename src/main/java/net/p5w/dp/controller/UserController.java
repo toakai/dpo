@@ -16,9 +16,10 @@ import net.p5w.dp.common.result.PageResult;
 import net.p5w.dp.common.result.Result;
 import net.p5w.dp.entity.User;
 import net.p5w.dp.service.UserService;
+import net.p5w.dp.vo.UserVO;
 
 /**
- * 用户管理控制器
+ * 用户控制器
  */
 @Slf4j
 @RestController
@@ -29,66 +30,78 @@ public class UserController extends BaseController {
     private UserService userService;
 
     /**
-     * 用户分页列表查询
+     * 分页查询用户列表（对外VO接口）
      *
-     * @param pageNum  当前页码
-     * @param pageSize 每页条数
-     * @return 分页用户数据
+     * @param page 前端传入的页码参数 page
+     * @param size 前端传入的每页条数 size
+     * @return 分页结果
      */
-    @GetMapping("/list")
-    public Result<PageResult<User>> getUserPageList(
-            @RequestParam(defaultValue = "1") Long pageNum,
-            @RequestParam(defaultValue = "10") Long pageSize) {
-        // 统一分页参数校验
-        Result<PageResult<User>> checkResult = validPageParam(pageNum, pageSize);
-        if (checkResult != null) {
-            return checkResult;
+    @GetMapping("/page")
+    public Result<PageResult<UserVO>> page(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+
+        // 转换为后端内部参数
+        Integer pageNum = buildPageNum(page);
+        Integer pageSize = buildPageSize(size);
+
+        // 校验参数
+        Result<PageResult<UserVO>> check = checkPage(pageNum, pageSize);
+        if (check != null) {
+            return check;
         }
-        logApiStart("用户分页列表查询", pageNum, pageSize);
-        PageResult<User> pageData = userService.getUserPage(pageNum, pageSize);
-        logApiEnd("用户分页列表查询");
+
+        logStart("用户VO分页", pageNum, pageSize);
+        PageResult<UserVO> pageData = userService.getUserVoPage(pageNum, pageSize);
+        logEnd("用户VO分页");
+
         return pageSuccess(pageData);
     }
 
     /**
-     * 根据主键查询用户详情
-     *
-     * @param id 用户主键ID
-     * @return 用户信息
+     * 分页查询用户列表（对内完整实体接口）
      */
+    @GetMapping("/list")
+    public Result<PageResult<User>> list(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+
+        Integer pageNum = buildPageNum(page);
+        Integer pageSize = buildPageSize(size);
+
+        Result<PageResult<User>> check = checkPage(pageNum, pageSize);
+        if (check != null) {
+            return check;
+        }
+
+        logStart("用户全量分页", pageNum, pageSize);
+        PageResult<User> pageData = userService.getUserPage(pageNum, pageSize);
+        logEnd("用户全量分页");
+
+        return pageSuccess(pageData);
+    }
+
     @GetMapping("/{id}")
-    public Result<User> getUserDetail(@PathVariable Long id) {
-        logApiStart("查询用户详情", id);
+    public Result<User> detail(@PathVariable Long id) {
+        logStart("查询用户详情", id);
         User user = userService.getById(id);
-        logApiEnd("查询用户详情");
+        logEnd("查询用户详情");
         return success(user);
     }
 
-    /**
-     * 新增/编辑用户信息
-     *
-     * @param user 用户实体
-     * @return 操作结果
-     */
     @PostMapping("/save")
-    public Result<Void> saveOrUpdateUser(@RequestBody User user) {
-        logApiStart("新增或编辑用户", user);
+    public Result<Void> save(@RequestBody User user) {
+        logStart("保存用户", user);
         userService.save(user);
-        logApiEnd("新增或编辑用户");
+        logEnd("保存用户");
         return success();
     }
 
-    /**
-     * 根据ID删除用户
-     *
-     * @param id 用户主键ID
-     * @return 操作结果
-     */
     @DeleteMapping("/{id}")
-    public Result<Void> removeUser(@PathVariable Long id) {
-        logApiStart("删除用户数据", id);
+    public Result<Void> delete(@PathVariable Long id) {
+        logStart("删除用户", id);
         userService.delete(id);
-        logApiEnd("删除用户数据");
+        logEnd("删除用户");
         return success();
     }
 }
