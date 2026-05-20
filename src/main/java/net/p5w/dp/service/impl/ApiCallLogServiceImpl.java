@@ -1,6 +1,7 @@
 package net.p5w.dp.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Service;
 
 import net.p5w.dp.entity.ApiCallLog;
@@ -10,7 +11,7 @@ import net.p5w.dp.service.ApiCallLogService;
 @Service
 public class ApiCallLogServiceImpl implements ApiCallLogService {
 
-    @Autowired
+    @Resource
     private ApiCallLogMapper apiCallLogMapper;
 
     @Override

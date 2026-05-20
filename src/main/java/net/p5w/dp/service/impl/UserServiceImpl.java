@@ -2,18 +2,25 @@ package net.p5w.dp.service.impl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+
+import lombok.extern.slf4j.Slf4j;
 import net.p5w.dp.common.result.PageResult;
 import net.p5w.dp.entity.User;
 import net.p5w.dp.mapper.UserMapper;
 import net.p5w.dp.service.UserService;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
+    @Resource
     private UserMapper userMapper;
 
     @Override
@@ -28,7 +35,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int update(User record) {
-        return userMapper.updateById(record.getId());
+        return userMapper.updateById(record);
     }
 
     @Override
@@ -36,28 +43,29 @@ public class UserServiceImpl implements UserService {
         userMapper.deleteById(id);
     }
 
+    @Override
     public void save(User user) {
         if (user.getId() == null) {
             userMapper.insert(user);
         } else {
-            userMapper.updateById(user.getId());
+            userMapper.updateById(user);
         }
     }
 
     @Override
-    public PageResult<User> getUserPage(long current, long size) {
-        // 1. 计算起始行
-        long offset = (current - 1) * size;
+    public PageResult<User> getUserPage(Long page, Long size) {
+        log.info("用户分页查询 page={}, size={}", page, size);
 
-        // 2. 查询分页列表
-        List<User> userList = userMapper.selectUserPage(offset, size);
+        PageHelper.startPage(page.intValue(), size.intValue());
+        List<User> list = userMapper.list();
+        PageInfo<User> pageInfo = new PageInfo<>(list);
 
-        // 3. 查询总条数
-        long total = userMapper.selectUserCount();
-
-        // 4. 封装分页结果
-        return PageResult.build(total, size, current, userList);
+        // 使用我们自己的 PageResult（完整分页信息）
+        return PageResult.build(
+                pageInfo.getTotal(),
+                (long) pageInfo.getPageSize(),
+                (long) pageInfo.getPageNum(),
+                pageInfo.getList()
+        );
     }
-
 }
-

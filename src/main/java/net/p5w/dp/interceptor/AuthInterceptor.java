@@ -5,10 +5,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import lombok.extern.slf4j.Slf4j;
 import net.p5w.dp.common.exception.BizException;
 import net.p5w.dp.common.result.ResultCode;
 import net.p5w.dp.service.AuthClientService;
 
+@Slf4j
 public class AuthInterceptor implements HandlerInterceptor {
     private final AuthClientService authClientService;
 
@@ -23,7 +25,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         String sign = request.getHeader("sign");
         String timestamp = request.getHeader("timestamp");
         String nonce = request.getHeader("nonce");
-        System.out.println("appKey: " + appKey + ", sign: " + sign + ", timestamp: " + timestamp + ", nonce: " + nonce);
+        log.info("appKey: {}, sign: {}, timestamp: {}, nonce: {}", appKey, sign, timestamp, nonce);
 
         // 必须传这4个参数
         if (appKey == null || sign == null || timestamp == null || nonce == null) {

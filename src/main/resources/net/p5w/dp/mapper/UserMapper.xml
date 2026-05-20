@@ -59,7 +59,6 @@
         from p5w_user
         limit #{offset}, #{size}
     </select>
-
     <!-- 查询总数 -->
     <select id="selectUserCount" resultType="long">
         select count(*) from p5w_user

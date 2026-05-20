@@ -2,9 +2,9 @@ package net.p5w.dp.service.impl;
 
 import java.util.Date;
 
-import org.springframework.stereotype.Service;
+import javax.annotation.Resource;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 import net.p5w.dp.common.util.SignUtil;
@@ -18,10 +18,10 @@ import net.p5w.dp.service.AuthClientService;
 @Service
 public class AuthClientServiceImpl implements AuthClientService {
 
-    @Autowired
+    @Resource
     private AuthClientMapper authClientMapper;
 
-    @Autowired
+    @Resource
     private NonceMapper nonceMapper;
 
     // 5分钟时间有效期

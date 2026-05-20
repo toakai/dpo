@@ -20,3 +20,9 @@ mybatis:
   type-aliases-package: net.p5w.dp.entity
   configuration:
     map-underscore-to-camel-case: true
+
+# 接口限流配置
+ip:
+  limit:
+    enabled: true
+    max-per-minute: 5    # 每分钟最大请求数

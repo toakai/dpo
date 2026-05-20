@@ -2,7 +2,8 @@ package net.p5w.dp.service.impl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Service;
 
 import net.p5w.dp.entity.Order;
@@ -12,7 +13,7 @@ import net.p5w.dp.service.OrderService;
 @Service
 public class OrderServiceImpl implements OrderService {
 
-    @Autowired
+    @Resource
     private OrderMapper orderMapper;
 
     @Override

@@ -6,7 +6,6 @@ import net.p5w.dp.common.result.PageResult;
 import net.p5w.dp.entity.User;
 
 public interface UserService {
-
     List<User> list();
 
     User getById(Long id);
@@ -15,9 +14,7 @@ public interface UserService {
 
     void delete(Long id);
 
-    void save(User record);
+    void save(User user);
 
-    PageResult<User> getUserPage(long current, long size);
-
+    PageResult<User> getUserPage(Long page, Long size);
 }
-

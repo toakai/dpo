@@ -1,6 +1,7 @@
 package net.p5w.dp.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +15,7 @@ import net.p5w.dp.service.UfContractService;
 @RequestMapping("/api/contract")
 public class UfContractController {
 
-    @Autowired
+    @Resource
     private UfContractService contractService;
 
     @GetMapping("/{id}")

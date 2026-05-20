@@ -1,17 +1,17 @@
 package net.p5w.dp.service.impl;
 
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import net.p5w.dp.mapper.NonceMapper;
 import net.p5w.dp.entity.Nonce;
+import net.p5w.dp.mapper.NonceMapper;
 import net.p5w.dp.service.NonceService;
 
 @Service
 public class NonceServiceImpl implements NonceService {
 
-    @Autowired
+    @Resource
     private NonceMapper nonceMapper;
 
     @Override
@@ -28,5 +28,5 @@ public class NonceServiceImpl implements NonceService {
     public Nonce selectByPrimaryKey(Long id) {
         return nonceMapper.selectByPrimaryKey(id);
     }
-    
+
 }
