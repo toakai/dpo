@@ -2,7 +2,6 @@ package net.p5w.dp.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -17,7 +16,6 @@ import net.p5w.dp.common.util.IpUtil;
  * 所有控制器继承此类，实现公共方法复用
  */
 @Slf4j
-@RestController
 public class BaseController {
 
     /**
@@ -47,24 +45,20 @@ public class BaseController {
     protected <T> Result<T> fail(ResultCode code) {
         return Result.fail(code.getCode(), code.getMsg());
     }
-    
+
     /**
      * 获取HttpServletRequest对象
      */
     protected HttpServletRequest getRequest() {
         ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        return attrs == null ? null : attrs.getRequest();
+        return attrs.getRequest();
     }
 
     /**
      * 获取客户端真实IP
      */
     protected String getClientIp() {
-        HttpServletRequest req = getRequest();
-        if (req == null) {
-            return "127.0.0.1";
-        }
-        return IpUtil.getClientIp(req);
+        return IpUtil.getClientIp(getRequest());
     }
 
     /**
@@ -80,6 +74,5 @@ public class BaseController {
     protected void logEnd(String name) {
         log.info("[{}] 执行完成", name);
     }
-
 
 }
