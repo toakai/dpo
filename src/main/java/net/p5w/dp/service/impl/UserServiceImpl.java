@@ -5,12 +5,14 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
 import lombok.extern.slf4j.Slf4j;
+import net.p5w.dp.common.query.UserQuery;
 import net.p5w.dp.common.result.PageResult;
 import net.p5w.dp.entity.User;
 import net.p5w.dp.mapper.UserMapper;
@@ -104,5 +106,28 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(Long id) {
         userMapper.deleteById(id);
+    }
+
+    @Override
+    public PageResult<UserVO> page(UserQuery query) {
+        PageHelper.startPage(query.getPage(), query.getSize());
+        List<User> userList = userMapper.selectUserList(query);
+
+        PageInfo<User> pageInfo = new PageInfo<>(userList);
+        List<UserVO> voList = userList.stream().map(u -> {
+            UserVO vo = new UserVO();
+            BeanUtils.copyProperties(u, vo);
+            return vo;
+        }).collect(Collectors.toList());
+
+        return PageResult.build(pageInfo.getTotal(), pageInfo.getPageSize(), pageInfo.getPageNum(), voList);
+    }
+
+    @Override
+    public PageResult<User> list(UserQuery query) {
+        PageHelper.startPage(query.getPage(), query.getSize());
+        List<User> userList = userMapper.selectUserList(query);
+        PageInfo<User> pageInfo = new PageInfo<>(userList);
+        return PageResult.build(pageInfo.getTotal(), pageInfo.getPageSize(), pageInfo.getPageNum(), userList);
     }
 }

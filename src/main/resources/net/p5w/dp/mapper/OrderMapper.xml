@@ -16,18 +16,6 @@
         <!--@mbg.generated-->
         id, user_id, order_no, amount, `status`, create_time, update_time
     </sql>
-    <select id="getById" parameterType="java.lang.Long" resultMap="BaseResultMap">
-        <!--@mbg.generated-->
-        select
-        <include refid="Base_Column_List"/>
-        from p5w_order
-        where id = #{id,jdbcType=BIGINT}
-    </select>
-    <delete id="deleteById" parameterType="java.lang.Long">
-        <!--@mbg.generated-->
-        delete from p5w_order
-        where id = #{id,jdbcType=BIGINT}
-    </delete>
     <insert id="insert" keyColumn="id" keyProperty="id" parameterType="net.p5w.dp.entity.Order" useGeneratedKeys="true">
         <!--@mbg.generated-->
         insert into p5w_order (user_id, order_no, amount,
@@ -48,7 +36,45 @@
         update_time = #{updateTime,jdbcType=TIMESTAMP}
         where id = #{id,jdbcType=BIGINT}
     </update>
-    <select id="list" resultMap="BaseResultMap">
+
+
+    <!-- 订单列表查询 -->
+<!--    <select id="selectOrderList" resultMap="BaseResultMap">-->
+<!--        SELECT-->
+<!--        <include refid="Base_Column_List"/>-->
+<!--        FROM p5w_order-->
+<!--        ORDER BY id DESC-->
+<!--    </select>-->
+
+    <!-- 新增订单 -->
+    <insert id="insertOrder" parameterType="net.p5w.dp.entity.Order">
+        INSERT INTO p5w_order
+            (user_id, order_no, amount, status, create_time, update_time)
+        VALUES (#{userId}, #{orderNo}, #{amount}, #{status}, #{createTime}, #{updateTime})
+    </insert>
+
+    <!-- 根据id删除订单 -->
+    <delete id="deleteById">
+        DELETE
+        FROM p5w_order
+        WHERE id = #{id}
+    </delete>
+
+    <!-- 根据id查询订单详情 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM p5w_order
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectOrderList" resultType="net.p5w.dp.entity.Order">
         SELECT * FROM p5w_order
+        <where>
+            <if test="userId != null"> AND user_id = #{userId} </if>
+            <if test="orderNo != null"> AND order_no = #{orderNo} </if>
+            <if test="status != null"> AND status = #{status} </if>
+        </where>
+        ORDER BY id DESC
     </select>
 </mapper>

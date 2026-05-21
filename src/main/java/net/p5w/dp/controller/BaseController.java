@@ -20,13 +20,6 @@ import net.p5w.dp.common.util.IpUtil;
 @RestController
 public class BaseController {
 
-    // 默认页码
-    protected static final Integer DEFAULT_PAGE_NUM = 1;
-    // 默认每页条数
-    protected static final Integer DEFAULT_PAGE_SIZE = 10;
-    // 最大允许每页条数
-    protected static final Integer MAX_PAGE_SIZE = 100;
-
     /**
      * 成功返回（无数据）
      */
@@ -54,34 +47,7 @@ public class BaseController {
     protected <T> Result<T> fail(ResultCode code) {
         return Result.fail(code.getCode(), code.getMsg());
     }
-
-    /**
-     * 构建页码：为空则赋默认值1
-     */
-    protected Integer buildPageNum(Integer pageNum) {
-        return pageNum == null ? DEFAULT_PAGE_NUM : pageNum;
-    }
-
-    /**
-     * 构建每页条数：为空则赋默认值10
-     */
-    protected Integer buildPageSize(Integer pageSize) {
-        return pageSize == null ? DEFAULT_PAGE_SIZE : pageSize;
-    }
-
-    /**
-     * 分页参数合法性校验
-     */
-    protected <T> Result<T> checkPage(Integer pageNum, Integer pageSize) {
-        if (pageNum < 1) {
-            return fail(ResultCode.PAGE_NUM_ERROR);
-        }
-        if (pageSize < 1 || pageSize > MAX_PAGE_SIZE) {
-            return fail(ResultCode.PAGE_SIZE_MAX_ERROR);
-        }
-        return null;
-    }
-
+    
     /**
      * 获取HttpServletRequest对象
      */
@@ -114,4 +80,6 @@ public class BaseController {
     protected void logEnd(String name) {
         log.info("[{}] 执行完成", name);
     }
+
+
 }

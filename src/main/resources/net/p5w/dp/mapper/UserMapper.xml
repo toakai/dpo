@@ -63,4 +63,19 @@
     <select id="selectUserCount" resultType="long">
         select count(*) from p5w_user
     </select>
+
+    <select id="selectUserList" resultType="net.p5w.dp.entity.User">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM p5w_user
+        <where>
+            <if test="username != null">
+                AND username LIKE CONCAT('%', #{username}, '%')
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
 </mapper>

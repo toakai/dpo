@@ -1,5 +1,6 @@
 package net.p5w.dp.mapper;
 
+import net.p5w.dp.common.query.UserQuery;
 import net.p5w.dp.entity.User;
 import org.apache.ibatis.annotations.Param;
 import java.util.List;
@@ -30,4 +31,6 @@ public interface UserMapper {
      * 查询全部用户（PageHelper 分页专用）
      */
     List<User> list();
+
+    List<User> selectUserList(UserQuery query);
 }

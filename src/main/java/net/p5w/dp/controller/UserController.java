@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
+import net.p5w.dp.common.query.UserQuery;
 import net.p5w.dp.common.result.PageResult;
 import net.p5w.dp.common.result.Result;
 import net.p5w.dp.entity.User;
@@ -31,30 +32,13 @@ public class UserController extends BaseController {
 
     /**
      * 分页查询用户列表（对外VO接口）
-     *
-     * @param page 前端传入的页码参数 page
-     * @param size 前端传入的每页条数 size
      * @return 分页结果
      */
     @GetMapping("/page")
-    public Result<PageResult<UserVO>> page(
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
-
-        // 转换为后端内部参数
-        Integer pageNum = buildPageNum(page);
-        Integer pageSize = buildPageSize(size);
-
-        // 校验参数
-        Result<PageResult<UserVO>> check = checkPage(pageNum, pageSize);
-        if (check != null) {
-            return check;
-        }
-
-        logStart("用户VO分页", pageNum, pageSize);
-        PageResult<UserVO> pageData = userService.getUserVoPage(pageNum, pageSize);
+    public Result<PageResult<UserVO>> page(UserQuery query) {
+        logStart("用户VO分页", query);
+        PageResult<UserVO> pageData = userService.page(query);
         logEnd("用户VO分页");
-
         return pageSuccess(pageData);
     }
 
@@ -62,22 +46,10 @@ public class UserController extends BaseController {
      * 分页查询用户列表（对内完整实体接口）
      */
     @GetMapping("/list")
-    public Result<PageResult<User>> list(
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
-
-        Integer pageNum = buildPageNum(page);
-        Integer pageSize = buildPageSize(size);
-
-        Result<PageResult<User>> check = checkPage(pageNum, pageSize);
-        if (check != null) {
-            return check;
-        }
-
-        logStart("用户全量分页", pageNum, pageSize);
-        PageResult<User> pageData = userService.getUserPage(pageNum, pageSize);
+    public Result<PageResult<User>> list(UserQuery query) {
+        logStart("用户全量分页", query);
+        PageResult<User> pageData = userService.list(query);
         logEnd("用户全量分页");
-
         return pageSuccess(pageData);
     }
 

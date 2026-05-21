@@ -2,6 +2,7 @@ package net.p5w.dp.service;
 
 import java.util.List;
 
+import net.p5w.dp.common.query.UserQuery;
 import net.p5w.dp.common.result.PageResult;
 import net.p5w.dp.entity.User;
 import net.p5w.dp.vo.UserVO;
@@ -65,4 +66,8 @@ public interface UserService {
      * @param id 用户ID
      */
     void delete(Long id);
+
+    PageResult<UserVO> page(UserQuery query);
+
+    PageResult<User> list(UserQuery query);
 }
