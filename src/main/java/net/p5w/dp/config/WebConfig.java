@@ -1,17 +1,13 @@
 package net.p5w.dp.config;
 
-import java.util.List;
-
 import javax.annotation.Resource;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import lombok.extern.slf4j.Slf4j;
 import net.p5w.dp.common.limit.IpRateLimiter;
-import net.p5w.dp.common.resolver.PageQueryArgumentResolver;
 import net.p5w.dp.interceptor.AuthInterceptor;
 import net.p5w.dp.interceptor.IpLimitInterceptor;
 import net.p5w.dp.interceptor.LogInterceptor;
@@ -50,10 +46,5 @@ public class WebConfig implements WebMvcConfigurer {
 
         log.info("拦截器注册完成：日志、限流、鉴权");
     }
-
-    // @Override
-    // public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-    //     resolvers.add(new PageQueryArgumentResolver());
-    // }
 
 }
