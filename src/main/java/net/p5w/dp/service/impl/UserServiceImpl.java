@@ -32,17 +32,10 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public PageResult<User> getUserPage(Integer pageNum, Integer pageSize) {
-        log.info("开始分页：pageNum={}, pageSize={}", pageNum, pageSize);
-        log.warn("开始分页：pageNum={}, pageSize={}", pageNum, pageSize);
-        log.error("开始分页：pageNum={}, pageSize={}", pageNum, pageSize);
-        log.debug("开始分页：pageNum={}, pageSize={}", pageNum, pageSize);
-        log.trace("开始分页：pageNum={}, pageSize={}", pageNum, pageSize);
+        log.info("开始分页查询用户：pageNum={}, pageSize={}", pageNum, pageSize);
 
-        // ===========================
-        // 必须紧挨着查询，中间不能有任何代码
-        // ===========================
         PageHelper.startPage(pageNum, pageSize);
-        List<User> userList = userMapper.list(); // 必须紧跟在 startPage 下一行！
+        List<User> userList = userMapper.list();
 
         PageInfo<User> pageInfo = new PageInfo<>(userList);
 
@@ -59,13 +52,10 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public PageResult<UserVO> getUserVoPage(Integer pageNum, Integer pageSize) {
-        log.info("开始分页：pageNum={}, pageSize={}", pageNum, pageSize);
+        log.info("开始分页查询用户VO：pageNum={}, pageSize={}", pageNum, pageSize);
 
-        // ===========================
-        // 【终极正确】紧挨着查询！
-        // ===========================
         PageHelper.startPage(pageNum, pageSize);
-        List<User> userList = userMapper.list(); // 必须紧跟！
+        List<User> userList = userMapper.list();
 
         PageInfo<User> pageInfo = new PageInfo<>(userList);
 
