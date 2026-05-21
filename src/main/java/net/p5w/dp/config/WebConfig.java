@@ -14,6 +14,17 @@ import net.p5w.dp.interceptor.LogInterceptor;
 import net.p5w.dp.service.ApiCallLogService;
 import net.p5w.dp.service.AuthClientService;
 
+/**
+ * Web MVC 配置
+ * <p>
+ * 拦截器注册顺序（按执行顺序排列）：
+ * <ol>
+ *   <li>{@link LogInterceptor}：全路径，生成 requestId 并记录请求日志</li>
+ *   <li>{@link IpLimitInterceptor}：/api/**，IP 滑动窗口限流</li>
+ *   <li>{@link AuthInterceptor}：/api/**，签名鉴权</li>
+ * </ol>
+ * </p>
+ */
 @Slf4j
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -27,24 +38,20 @@ public class WebConfig implements WebMvcConfigurer {
     @Resource
     private IpRateLimiter ipRateLimiter;
 
-
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        log.info("开始注册拦截器...");
-
-        // 日志拦截器
+        // 1. 日志拦截器（所有请求）
         registry.addInterceptor(new LogInterceptor(apiCallLogService))
                 .addPathPatterns("/**");
 
-        // IP限流拦截器
+        // 2. IP 限流拦截器（API 接口）
         registry.addInterceptor(new IpLimitInterceptor(ipRateLimiter))
                 .addPathPatterns("/api/**");
 
-        // 鉴权拦截器
+        // 3. 签名鉴权拦截器（API 接口）
         registry.addInterceptor(new AuthInterceptor(authClientService))
                 .addPathPatterns("/api/**");
 
-        log.info("拦截器注册完成：日志、限流、鉴权");
+        log.info("拦截器注册完成：日志（/**）、IP 限流（/api/**）、鉴权（/api/**）");
     }
-
 }

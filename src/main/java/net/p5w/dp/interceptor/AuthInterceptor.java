@@ -10,8 +10,17 @@ import net.p5w.dp.common.exception.BizException;
 import net.p5w.dp.common.result.ResultCode;
 import net.p5w.dp.service.AuthClientService;
 
+/**
+ * 签名鉴权拦截器
+ * <p>
+ * 校验请求头中的 appKey / sign / timestamp / nonce 四要素，
+ * 任一缺失或签名不合法时抛出 {@link BizException}，
+ * 由 {@link net.p5w.dp.common.exception.GlobalExceptionHandler} 统一返回 401/403。
+ * </p>
+ */
 @Slf4j
 public class AuthInterceptor implements HandlerInterceptor {
+
     private final AuthClientService authClientService;
 
     public AuthInterceptor(AuthClientService authClientService) {
@@ -20,21 +29,20 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        // 获取请求头参数
-        String appKey = request.getHeader("appKey");
-        String sign = request.getHeader("sign");
+        String appKey    = request.getHeader("appKey");
+        String sign      = request.getHeader("sign");
         String timestamp = request.getHeader("timestamp");
-        String nonce = request.getHeader("nonce");
-        log.info("appKey: {}, sign: {}, timestamp: {}, nonce: {}", appKey, sign, timestamp, nonce);
+        String nonce     = request.getHeader("nonce");
+        log.debug("鉴权参数：appKey={}, timestamp={}, nonce={}", appKey, timestamp, nonce);
 
-        // 必须传这4个参数
+        // 四要素必须同时存在
         if (appKey == null || sign == null || timestamp == null || nonce == null) {
             throw new BizException(ResultCode.UNAUTHORIZED);
         }
 
-        // 校验签名（核心）
+        // 校验签名
         boolean ok = authClientService.checkSign(appKey, sign, timestamp, nonce, null);
-        System.out.println("ok: " + ok);
+        log.debug("签名校验结果: {}", ok);
         if (!ok) {
             throw new BizException(ResultCode.FORBIDDEN);
         }

@@ -9,7 +9,6 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,12 +20,12 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
 
 /**
- * 配置多数据源
- *
- * @author Skyle
- * @ClassName: DynamicDataSourceConfig
- * @Description: TODO
- * @date 2018年5月1日 下午10:58:13
+ * 多数据源配置
+ * <p>
+ * 注册 dpo（主库）和 ecology（从库）两个数据源，
+ * 并将其组合为动态数据源 {@link DynamicDataSource}，
+ * 由 {@link net.p5w.dp.common.aspect.DataSourceAspect} 在运行时切换。
+ * </p>
  */
 @Configuration
 public class DynamicDataSourceConfig {
@@ -55,8 +54,7 @@ public class DynamicDataSourceConfig {
     }
 
     @Bean(name = "sqlSessionFactory")
-    public SqlSessionFactory sqlSessionFactory(@Qualifier("dynamicDataSource") DataSource dynamicDataSource,
-                                               @Value("${mybatis.mapper-locations}") String mapperLocations) throws Exception {
+    public SqlSessionFactory sqlSessionFactory(@Qualifier("dynamicDataSource") DataSource dynamicDataSource) throws Exception {
         SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
         sqlSessionFactoryBean.setDataSource(dynamicDataSource);
         // 此处设置为了解决找不到mapper文件的问题

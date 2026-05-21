@@ -1,28 +1,25 @@
 package net.p5w.dp.common.aspect;
 
-import java.lang.reflect.Method;
-
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 import net.p5w.dp.common.annotation.DataSource;
-import net.p5w.dp.common.support.orm.db.DataSourceEnum;
 import net.p5w.dp.common.support.orm.db.DynamicDataSource;
 
 /**
- * 数据源切面处理
- *
- * @author Skyle
- * @ClassName: DataSourceAspect
- * @Description: TODO
- * @date 2018年4月30日 下午3:51:25
+ * 动态数据源切换切面
+ * <p>
+ * 拦截标注了 {@link net.p5w.dp.common.annotation.DataSource} 注解的方法，
+ * 在方法执行前切换到指定数据源，执行完毕后清除 ThreadLocal 恢复默认。
+ * </p>
  */
 @Slf4j
 @Aspect
@@ -37,24 +34,19 @@ public class DataSourceAspect {
     @Around("pointCut()")
     public Object doAround(ProceedingJoinPoint point) throws Throwable {
         MethodSignature signature = (MethodSignature) point.getSignature();
-        Method method = signature.getMethod();
-        DataSource ds = method.getAnnotation(DataSource.class);
+        String dataSource = signature.getMethod().getAnnotation(DataSource.class).value();
 
-        String dataSource = ds.value();
-        if (StringUtils.isBlank(dataSource)) {
-            DynamicDataSource.setDataSource(DataSourceEnum.ECOLOGY.getName());
-            log.debug("set datasource is null, use datasource : {}", dataSource);
-            System.err.println("set datasource is null, use datasource : " + dataSource);
-        } else {
+        if (StringUtils.isNotBlank(dataSource)) {
             DynamicDataSource.setDataSource(dataSource);
-            log.debug("use datasource : {}", dataSource);
+            log.debug("切换数据源：{}", dataSource);
         }
+        // value 为空时不设置，DynamicDataSource 会自动回退到默认数据源（DPO）
 
         try {
             return point.proceed();
         } finally {
             DynamicDataSource.clearDataSource();
-            log.debug("clear datasource...");
+            log.debug("清除数据源绑定");
         }
     }
 }

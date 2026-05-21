@@ -5,18 +5,23 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
 /**
  * 动态数据源
- *
- * @author Skyle
- * @ClassName: DynamicDataSource
- * @Description: TODO
- * @date 2018年4月30日 下午10:31:30
+ * <p>
+ * 基于 ThreadLocal 保存当前线程的数据源标识，
+ * Spring 在每次获取连接时调用 {@link #determineCurrentLookupKey()} 决定使用哪个数据源。
+ * 数据源切换由 {@link net.p5w.dp.common.aspect.DataSourceAspect} 在方法级别控制。
+ * </p>
  */
 public class DynamicDataSource extends AbstractRoutingDataSource {
 
+    private static final Logger log = LoggerFactory.getLogger(DynamicDataSource.class);
+
+    /** 当前线程绑定的数据源标识 */
     private static final ThreadLocal<String> CONTEXT_HOLDER = new ThreadLocal<>();
 
     public DynamicDataSource(DataSource defaultTargetDataSource, Map<String, DataSource> targetDataSources) {
@@ -27,37 +32,36 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
 
     @Override
     protected Object determineCurrentLookupKey() {
-        String currDataSource = getDataSource();
-        return currDataSource;
+        return getDataSource();
     }
 
     /**
-     * 设置数据源
+     * 设置当前线程使用的数据源
      *
-     * @param dataSource
+     * @param dataSource 数据源标识，见 {@link DataSourceEnum}
      */
     public static void setDataSource(String dataSource) {
         CONTEXT_HOLDER.set(dataSource);
-        System.err.println("[将当前数据源改为]：" + dataSource);
+        log.debug("切换数据源：{}", dataSource);
     }
 
     /**
-     * 获取数据源
+     * 获取当前线程的数据源标识，未设置时使用默认数据源
      *
-     * @return
+     * @return 数据源标识
      */
     public static String getDataSource() {
         String dataSource = CONTEXT_HOLDER.get();
-        // 如果没有指定数据源，使用默认数据源
-        if (null == dataSource) {
-            DynamicDataSource.setDataSource(DataSourceEnum.DPO.getDefault());
+        if (dataSource == null) {
+            // 未指定时回退到主库
+            setDataSource(DataSourceEnum.DPO.getDefault());
         }
-        System.err.println("[获取当前数据源的类型为]：" + dataSource);
+        log.debug("当前数据源：{}", CONTEXT_HOLDER.get());
         return CONTEXT_HOLDER.get();
     }
 
     /**
-     * 清除数据源
+     * 清除当前线程的数据源标识（方法执行完毕后必须调用，防止 ThreadLocal 泄漏）
      */
     public static void clearDataSource() {
         CONTEXT_HOLDER.remove();

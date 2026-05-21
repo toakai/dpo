@@ -1,26 +1,35 @@
 package net.p5w.dp.service.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
 import lombok.extern.slf4j.Slf4j;
+import net.p5w.dp.common.query.UserOrderQuery;
 import net.p5w.dp.common.query.UserQuery;
 import net.p5w.dp.common.result.PageResult;
+import net.p5w.dp.entity.Order;
 import net.p5w.dp.entity.User;
+import net.p5w.dp.mapper.OrderMapper;
 import net.p5w.dp.mapper.UserMapper;
 import net.p5w.dp.service.UserService;
+import net.p5w.dp.vo.OrderVO;
+import net.p5w.dp.vo.UserOrderVO;
 import net.p5w.dp.vo.UserVO;
 
 /**
- * 用户Service实现类
+ * 用户 Service 实现类
  */
 @Slf4j
 @Service
@@ -29,91 +38,20 @@ public class UserServiceImpl implements UserService {
     @Resource
     private UserMapper userMapper;
 
-    /**
-     * 分页查询用户（完整实体）
-     */
-    @Override
-    public PageResult<User> getUserPage(Integer pageNum, Integer pageSize) {
-        log.info("开始分页查询用户：pageNum={}, pageSize={}", pageNum, pageSize);
-
-        PageHelper.startPage(pageNum, pageSize);
-        List<User> userList = userMapper.list();
-
-        PageInfo<User> pageInfo = new PageInfo<>(userList);
-
-        return PageResult.build(
-                pageInfo.getTotal(),
-                pageInfo.getPageSize(),
-                pageInfo.getPageNum(),
-                pageInfo.getList()
-        );
-    }
+    @Resource
+    private OrderMapper orderMapper;
 
     /**
-     * 分页查询用户（VO对象）
+     * 分页查询用户（返回脱敏 VO，对外接口使用）
      */
-    @Override
-    public PageResult<UserVO> getUserVoPage(Integer pageNum, Integer pageSize) {
-        log.info("开始分页查询用户VO：pageNum={}, pageSize={}", pageNum, pageSize);
-
-        PageHelper.startPage(pageNum, pageSize);
-        List<User> userList = userMapper.list();
-
-        PageInfo<User> pageInfo = new PageInfo<>(userList);
-
-        List<UserVO> voList = userList.stream().map(user -> {
-            UserVO vo = new UserVO();
-            vo.setId(user.getId());
-            vo.setUsername(user.getUsername());
-            vo.setRealName(user.getRealName());
-            vo.setPhone(user.getPhone());
-            vo.setCreateTime(user.getCreateTime());
-            return vo;
-        }).collect(Collectors.toList());
-
-        return PageResult.build(
-                pageInfo.getTotal(),
-                pageInfo.getPageSize(),
-                pageInfo.getPageNum(),
-                voList
-        );
-    }
-
-    @Override
-    public List<User> list() {
-        return userMapper.list();
-    }
-
-    @Override
-    public User getById(Long id) {
-        return userMapper.getById(id);
-    }
-
-    @Override
-    public void save(User user) {
-        if (user.getId() == null) {
-            userMapper.insert(user);
-        } else {
-            userMapper.updateById(user);
-        }
-    }
-
-    @Override
-    public int update(User user) {
-        return userMapper.updateById(user);
-    }
-
-    @Override
-    public void delete(Long id) {
-        userMapper.deleteById(id);
-    }
-
     @Override
     public PageResult<UserVO> page(UserQuery query) {
-        PageHelper.startPage(query.getPage(), query.getSize());
-        List<User> userList = userMapper.selectUserList(query);
+        log.info("分页查询用户VO：pageNum={}, pageSize={}", query.getPageNum(), query.getPageSize());
 
+        PageHelper.startPage(query.getPageNum(), query.getPageSize());
+        List<User> userList = userMapper.selectUserList(query);
         PageInfo<User> pageInfo = new PageInfo<>(userList);
+
         List<UserVO> voList = userList.stream().map(u -> {
             UserVO vo = new UserVO();
             BeanUtils.copyProperties(u, vo);
@@ -123,11 +61,110 @@ public class UserServiceImpl implements UserService {
         return PageResult.build(pageInfo.getTotal(), pageInfo.getPageSize(), pageInfo.getPageNum(), voList);
     }
 
+    /**
+     * 分页查询用户+嵌套订单列表（一对多）
+     * <p>
+     * 采用两步查询法避免 N+1 问题：
+     * <ol>
+     *   <li>PageHelper 分页查用户列表</li>
+     *   <li>收集当前页用户 ID，批量查询订单</li>
+     *   <li>按 userId 分组，组装到 UserOrderVO</li>
+     * </ol>
+     * </p>
+     */
+    @Override
+    public PageResult<UserOrderVO> pageWithOrders(UserOrderQuery query) {
+        log.info("分页查询用户+订单：pageNum={}, pageSize={}, username={}",
+                query.getPageNum(), query.getPageSize(), query.getUsername());
+
+        // 第一步：分页查询用户
+        PageHelper.startPage(query.getPageNum(), query.getPageSize());
+        UserQuery userQuery = new UserQuery();
+        userQuery.setUsername(query.getUsername());
+        List<User> userList = userMapper.selectUserList(userQuery);
+        PageInfo<User> pageInfo = new PageInfo<>(userList);
+
+        // 第二步：批量查询当前页用户的订单
+        List<Long> userIds = userList.stream().map(User::getId).collect(Collectors.toList());
+        final Map<Long, List<OrderVO>> orderMap;
+        if (!CollectionUtils.isEmpty(userIds)) {
+            List<Order> orderList = orderMapper.selectByUserIds(userIds);
+            orderMap = orderList.stream()
+                    .collect(Collectors.groupingBy(
+                            Order::getUserId,
+                            Collectors.mapping(this::convertToOrderVO, Collectors.toList())
+                    ));
+        } else {
+            orderMap = Collections.emptyMap();
+        }
+
+        // 第三步：组装 VO
+        List<UserOrderVO> voList = userList.stream().map(user -> {
+            UserOrderVO vo = new UserOrderVO();
+            BeanUtils.copyProperties(user, vo);
+            vo.setOrders(orderMap.getOrDefault(user.getId(), Collections.emptyList()));
+            return vo;
+        }).collect(Collectors.toList());
+
+        return PageResult.build(pageInfo.getTotal(), pageInfo.getPageSize(), pageInfo.getPageNum(), voList);
+    }
+
+    /**
+     * Order 实体转 OrderVO
+     */
+    private OrderVO convertToOrderVO(Order order) {
+        OrderVO vo = new OrderVO();
+        BeanUtils.copyProperties(order, vo);
+        return vo;
+    }
+
+    /**
+     * 分页查询用户（返回完整实体，内部管理接口使用）
+     */
     @Override
     public PageResult<User> list(UserQuery query) {
-        PageHelper.startPage(query.getPage(), query.getSize());
+        log.info("分页查询用户：pageNum={}, pageSize={}", query.getPageNum(), query.getPageSize());
+
+        PageHelper.startPage(query.getPageNum(), query.getPageSize());
         List<User> userList = userMapper.selectUserList(query);
         PageInfo<User> pageInfo = new PageInfo<>(userList);
+
         return PageResult.build(pageInfo.getTotal(), pageInfo.getPageSize(), pageInfo.getPageNum(), userList);
+    }
+
+    /**
+     * 查询全部用户（不分页）
+     */
+    @Override
+    public List<User> list() {
+        return userMapper.list();
+    }
+
+    /**
+     * 根据 ID 查询用户
+     */
+    @Override
+    public User getById(Long id) {
+        return userMapper.getById(id);
+    }
+
+    /**
+     * 保存用户：有 id 则更新，无 id 则新增
+     */
+    @Override
+    public void save(User user) {
+        if (user.getId() == null) {
+            userMapper.insert(user);
+        } else {
+            userMapper.updateById(user);
+        }
+    }
+
+    /**
+     * 根据 ID 删除用户
+     */
+    @Override
+    public void delete(Long id) {
+        userMapper.deleteById(id);
     }
 }

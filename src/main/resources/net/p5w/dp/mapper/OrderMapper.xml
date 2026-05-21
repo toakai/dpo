@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="net.p5w.dp.mapper.OrderMapper">
+
     <resultMap id="BaseResultMap" type="net.p5w.dp.entity.Order">
-        <!--@mbg.generated-->
-        <!--@Table p5w_order-->
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="user_id" jdbcType="BIGINT" property="userId"/>
         <result column="order_no" jdbcType="VARCHAR" property="orderNo"/>
@@ -12,55 +11,37 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
     </resultMap>
+
     <sql id="Base_Column_List">
-        <!--@mbg.generated-->
         id, user_id, order_no, amount, `status`, create_time, update_time
     </sql>
-    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="net.p5w.dp.entity.Order" useGeneratedKeys="true">
-        <!--@mbg.generated-->
-        insert into p5w_order (user_id, order_no, amount,
-        `status`, create_time
-        )
-        values (#{userId,jdbcType=BIGINT}, #{orderNo,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL},
-        #{status,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP}
-        )
-    </insert>
-    <update id="updateById" parameterType="net.p5w.dp.entity.Order">
-        <!--@mbg.generated-->
-        update p5w_order
-        set user_id = #{userId,jdbcType=BIGINT},
-        order_no = #{orderNo,jdbcType=VARCHAR},
-        amount = #{amount,jdbcType=DECIMAL},
-        `status` = #{status,jdbcType=TINYINT},
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-        update_time = #{updateTime,jdbcType=TIMESTAMP}
-        where id = #{id,jdbcType=BIGINT}
-    </update>
 
-
-    <!-- 订单列表查询 -->
-<!--    <select id="selectOrderList" resultMap="BaseResultMap">-->
-<!--        SELECT-->
-<!--        <include refid="Base_Column_List"/>-->
-<!--        FROM p5w_order-->
-<!--        ORDER BY id DESC-->
-<!--    </select>-->
+    <!-- 按条件分页查询订单列表（配合 PageHelper 分页插件） -->
+    <select id="selectOrderList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM p5w_order
+        <where>
+            <if test="userId != null"> AND user_id = #{userId} </if>
+            <if test="orderNo != null and orderNo != ''"> AND order_no = #{orderNo} </if>
+            <if test="status != null"> AND `status` = #{status} </if>
+        </where>
+        ORDER BY id DESC
+    </select>
 
     <!-- 新增订单 -->
     <insert id="insertOrder" parameterType="net.p5w.dp.entity.Order">
         INSERT INTO p5w_order
-            (user_id, order_no, amount, status, create_time, update_time)
+            (user_id, order_no, amount, `status`, create_time, update_time)
         VALUES (#{userId}, #{orderNo}, #{amount}, #{status}, #{createTime}, #{updateTime})
     </insert>
 
-    <!-- 根据id删除订单 -->
+    <!-- 根据主键删除订单 -->
     <delete id="deleteById">
-        DELETE
-        FROM p5w_order
-        WHERE id = #{id}
+        DELETE FROM p5w_order WHERE id = #{id}
     </delete>
 
-    <!-- 根据id查询订单详情 -->
+    <!-- 根据主键查询订单详情 -->
     <select id="selectById" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
@@ -68,13 +49,16 @@
         WHERE id = #{id}
     </select>
 
-    <select id="selectOrderList" resultType="net.p5w.dp.entity.Order">
-        SELECT * FROM p5w_order
-        <where>
-            <if test="userId != null"> AND user_id = #{userId} </if>
-            <if test="orderNo != null"> AND order_no = #{orderNo} </if>
-            <if test="status != null"> AND status = #{status} </if>
-        </where>
-        ORDER BY id DESC
+    <!-- 根据用户 ID 列表批量查询订单 -->
+    <select id="selectByUserIds" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM p5w_order
+        WHERE user_id IN
+        <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+        ORDER BY user_id ASC, id DESC
     </select>
+
 </mapper>
