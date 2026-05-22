@@ -41,7 +41,8 @@
     <update id="updateByRequestId" parameterType="net.p5w.dp.entity.ApiCallLog">
         update p5w_api_call_log
         set cost_time = #{costTime,jdbcType=BIGINT},
-        update_time = #{updateTime,jdbcType=TIMESTAMP}
+            `result` = #{result,jdbcType=LONGVARCHAR},
+            update_time = #{updateTime,jdbcType=TIMESTAMP}
         where request_id = #{requestId,jdbcType=VARCHAR}
     </update>
 </mapper>

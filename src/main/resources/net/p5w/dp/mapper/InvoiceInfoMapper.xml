@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.p5w.dp.mapper.InvoiceInfoMapper">
+
+    <resultMap id="BaseResultMap" type="net.p5w.dp.entity.InvoiceInfo">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="requestid" jdbcType="INTEGER" property="requestId"/>
+        <result column="requestcode" jdbcType="VARCHAR" property="requestCode"/>
+        <result column="skr" jdbcType="VARCHAR" property="skr"/>
+        <result column="bxsm" jdbcType="VARCHAR" property="bxsm"/>
+        <result column="fp" jdbcType="INTEGER" property="fp"/>
+        <result column="fprq" jdbcType="DATE" property="fprq"/>
+        <result column="jey" jdbcType="DECIMAL" property="jey"/>
+        <result column="cwqrjey" jdbcType="DECIMAL" property="cwqrjey"/>
+        <result column="bhsjey" jdbcType="DECIMAL" property="bhsjey"/>
+        <result column="jxsey" jdbcType="DECIMAL" property="jxsey"/>
+        <result column="fplx" jdbcType="VARCHAR" property="fplx"/>
+        <result column="zfsx" jdbcType="VARCHAR" property="zfsx"/>
+        <result column="imageID" jdbcType="INTEGER" property="imageId"/>
+        <result column="seller" jdbcType="VARCHAR" property="seller"/>
+        <result column="invoiceServiceYype" jdbcType="VARCHAR" property="invoiceServiceType"/>
+        <result column="purchaser" jdbcType="VARCHAR" property="purchaser"/>
+        <result column="priceWithoutTax" jdbcType="DECIMAL" property="priceWithoutTax"/>
+        <result column="taxRate" jdbcType="FLOAT" property="taxRate"/>
+        <result column="tax" jdbcType="DECIMAL" property="tax"/>
+        <result column="taxIncludedPrice" jdbcType="DECIMAL" property="taxIncludedPrice"/>
+        <result column="imagefilename" jdbcType="VARCHAR" property="imagefilename"/>
+        <result column="imagefiletype" jdbcType="VARCHAR" property="imagefiletype"/>
+        <result column="filerealpath" jdbcType="VARCHAR" property="filerealpath"/>
+        <result column="filesize" jdbcType="VARCHAR" property="filesize"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, requestid, requestcode, skr, bxsm, fp, fprq, jey, cwqrjey, bhsjey, jxsey,
+        fplx, zfsx, imageID, seller, invoiceServiceYype, purchaser, priceWithoutTax,
+        taxRate, tax, taxIncludedPrice, imagefilename, imagefiletype, filerealpath, filesize
+    </sql>
+
+    <!-- 按条件分页查询发票列表（配合 PageHelper 分页插件） -->
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM p5w_invoice_info
+        <where>
+            <if test="requestCode != null and requestCode != ''">
+                AND requestcode LIKE CONCAT('%', #{requestCode}, '%')
+            </if>
+            <if test="skr != null and skr != ''">
+                AND skr LIKE CONCAT('%', #{skr}, '%')
+            </if>
+            <if test="fplx != null and fplx != ''">
+                AND fplx = #{fplx}
+            </if>
+            <if test="fprqStart != null">
+                AND fprq &gt;= #{fprqStart}
+            </if>
+            <if test="fprqEnd != null">
+                AND fprq &lt;= #{fprqEnd}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
+    <!-- 根据主键查询发票详情 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM p5w_invoice_info
+        WHERE id = #{id}
+    </select>
+
+</mapper>

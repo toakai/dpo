@@ -5,3 +5,7 @@ spring:
       - classpath:application-@profiles.active@-schedule.yml
 #      - optional:file:./resources/application-@profiles.active@-db.yml
 #      - optional:file:./resources/application-@profiles.active@-schedule.yml
+
+# 开发环境文件上传配置
+file:
+  upload-path: /Users/tongsk/oafile
