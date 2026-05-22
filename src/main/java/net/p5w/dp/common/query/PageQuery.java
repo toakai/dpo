@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
  * setter 中内置参数合法性校验，非法值自动使用默认值或抛出异常。
  * </p>
  *
- * @see com.github.pagehelper.PageInfo
+ * @see net.p5w.dp.common.result.PageResult
  */
 @Slf4j
 public class PageQuery {

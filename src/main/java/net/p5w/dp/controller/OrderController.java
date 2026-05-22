@@ -10,10 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.pagehelper.PageInfo;
-
 import lombok.extern.slf4j.Slf4j;
 import net.p5w.dp.common.query.OrderQuery;
+import net.p5w.dp.common.result.PageResult;
 import net.p5w.dp.common.result.Result;
 import net.p5w.dp.entity.Order;
 import net.p5w.dp.service.OrderService;
@@ -38,11 +37,11 @@ public class OrderController extends BaseController {
      * @return 分页数据
      */
     @GetMapping("/page")
-    public Result<PageInfo<OrderVO>> pageList(OrderQuery query) {
+    public Result<PageResult<OrderVO>> pageList(OrderQuery query) {
         logStart("订单分页查询", query);
-        PageInfo<OrderVO> pageInfo = orderService.page(query);
+        PageResult<OrderVO> pageResult = orderService.page(query);
         logEnd("订单分页查询");
-        return pageSuccess(pageInfo);
+        return pageSuccess(pageResult);
     }
 
     /**

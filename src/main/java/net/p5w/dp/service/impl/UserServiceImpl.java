@@ -18,6 +18,7 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import net.p5w.dp.common.query.UserOrderQuery;
 import net.p5w.dp.common.query.UserQuery;
+import net.p5w.dp.common.result.PageResult;
 import net.p5w.dp.entity.Order;
 import net.p5w.dp.entity.User;
 import net.p5w.dp.mapper.OrderMapper;
@@ -44,12 +45,12 @@ public class UserServiceImpl implements UserService {
      * 分页查询用户（返回脱敏 VO，对外接口使用）
      */
     @Override
-    public PageInfo<UserVO> page(UserQuery query) {
+    public PageResult<UserVO> page(UserQuery query) {
         log.info("分页查询用户VO：pageNum={}, pageSize={}", query.getPageNum(), query.getPageSize());
 
         PageHelper.startPage(query.getPageNum(), query.getPageSize());
         List<User> userList = userMapper.selectUserList(query);
-        PageInfo<User> entityPageInfo = new PageInfo<>(userList);
+        PageInfo<User> pageInfo = new PageInfo<>(userList);
 
         List<UserVO> voList = userList.stream().map(u -> {
             UserVO vo = new UserVO();
@@ -57,7 +58,7 @@ public class UserServiceImpl implements UserService {
             return vo;
         }).collect(Collectors.toList());
 
-        return copyPageInfo(entityPageInfo, voList);
+        return PageResult.build(pageInfo.getTotal(), pageInfo.getPageSize(), pageInfo.getPageNum(), voList);
     }
 
     /**
@@ -72,7 +73,7 @@ public class UserServiceImpl implements UserService {
      * </p>
      */
     @Override
-    public PageInfo<UserOrderVO> pageWithOrders(UserOrderQuery query) {
+    public PageResult<UserOrderVO> pageWithOrders(UserOrderQuery query) {
         log.info("分页查询用户+订单：pageNum={}, pageSize={}, username={}",
                 query.getPageNum(), query.getPageSize(), query.getUsername());
 
@@ -81,7 +82,7 @@ public class UserServiceImpl implements UserService {
         UserQuery userQuery = new UserQuery();
         userQuery.setUsername(query.getUsername());
         List<User> userList = userMapper.selectUserList(userQuery);
-        PageInfo<User> entityPageInfo = new PageInfo<>(userList);
+        PageInfo<User> pageInfo = new PageInfo<>(userList);
 
         // 第二步：批量查询当前页用户的订单
         List<Long> userIds = userList.stream().map(User::getId).collect(Collectors.toList());
@@ -105,19 +106,7 @@ public class UserServiceImpl implements UserService {
             return vo;
         }).collect(Collectors.toList());
 
-        return copyPageInfo(entityPageInfo, voList);
-    }
-
-    /**
-     * 将 PageInfo 的分页元数据复制到新的 PageInfo（用于 Entity → VO 转换后保持分页信息）
-     */
-    private <S, T> PageInfo<T> copyPageInfo(PageInfo<S> source, List<T> list) {
-        PageInfo<T> target = new PageInfo<>(list);
-        target.setTotal(source.getTotal());
-        target.setPages(source.getPages());
-        target.setPageNum(source.getPageNum());
-        target.setPageSize(source.getPageSize());
-        return target;
+        return PageResult.build(pageInfo.getTotal(), pageInfo.getPageSize(), pageInfo.getPageNum(), voList);
     }
 
     /**
@@ -133,12 +122,14 @@ public class UserServiceImpl implements UserService {
      * 分页查询用户（返回完整实体，内部管理接口使用）
      */
     @Override
-    public PageInfo<User> list(UserQuery query) {
+    public PageResult<User> list(UserQuery query) {
         log.info("分页查询用户：pageNum={}, pageSize={}", query.getPageNum(), query.getPageSize());
 
         PageHelper.startPage(query.getPageNum(), query.getPageSize());
         List<User> userList = userMapper.selectUserList(query);
-        return new PageInfo<>(userList);
+        PageInfo<User> pageInfo = new PageInfo<>(userList);
+
+        return PageResult.build(pageInfo.getTotal(), pageInfo.getPageSize(), pageInfo.getPageNum(), userList);
     }
 
     /**

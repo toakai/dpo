@@ -10,11 +10,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.pagehelper.PageInfo;
-
 import lombok.extern.slf4j.Slf4j;
 import net.p5w.dp.common.query.UserOrderQuery;
 import net.p5w.dp.common.query.UserQuery;
+import net.p5w.dp.common.result.PageResult;
 import net.p5w.dp.common.result.Result;
 import net.p5w.dp.entity.User;
 import net.p5w.dp.service.UserService;
@@ -40,9 +39,9 @@ public class UserController extends BaseController {
      * @return 分页结果
      */
     @GetMapping("/page")
-    public Result<PageInfo<UserVO>> page(UserQuery query) {
+    public Result<PageResult<UserVO>> page(UserQuery query) {
         logStart("用户分页查询（VO）", query);
-        PageInfo<UserVO> pageData = userService.page(query);
+        PageResult<UserVO> pageData = userService.page(query);
         logEnd("用户分页查询（VO）");
         return pageSuccess(pageData);
     }
@@ -55,9 +54,9 @@ public class UserController extends BaseController {
      * @return 分页结果
      */
     @GetMapping("/list")
-    public Result<PageInfo<User>> list(UserQuery query) {
+    public Result<PageResult<User>> list(UserQuery query) {
         logStart("用户分页查询（全量）", query);
-        PageInfo<User> pageData = userService.list(query);
+        PageResult<User> pageData = userService.list(query);
         logEnd("用户分页查询（全量）");
         return pageSuccess(pageData);
     }
@@ -70,9 +69,9 @@ public class UserController extends BaseController {
      * @return 分页结果，每个用户携带其订单列表
      */
     @GetMapping("/pageWithOrders")
-    public Result<PageInfo<UserOrderVO>> pageWithOrders(UserOrderQuery query) {
+    public Result<PageResult<UserOrderVO>> pageWithOrders(UserOrderQuery query) {
         logStart("用户+订单分页查询", query);
-        PageInfo<UserOrderVO> pageData = userService.pageWithOrders(query);
+        PageResult<UserOrderVO> pageData = userService.pageWithOrders(query);
         logEnd("用户+订单分页查询");
         return pageSuccess(pageData);
     }

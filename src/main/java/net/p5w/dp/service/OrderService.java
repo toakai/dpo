@@ -1,8 +1,7 @@
 package net.p5w.dp.service;
 
-import com.github.pagehelper.PageInfo;
-
 import net.p5w.dp.common.query.OrderQuery;
+import net.p5w.dp.common.result.PageResult;
 import net.p5w.dp.entity.Order;
 import net.p5w.dp.vo.OrderVO;
 
@@ -16,7 +15,7 @@ public interface OrderService {
      *
      * @return 分页VO结果
      */
-    PageInfo<OrderVO> page(OrderQuery query);
+    PageResult<OrderVO> page(OrderQuery query);
 
     /**
      * 新增订单
