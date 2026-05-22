@@ -14,7 +14,6 @@ import com.github.pagehelper.PageInfo;
 
 import lombok.extern.slf4j.Slf4j;
 import net.p5w.dp.common.query.OrderQuery;
-import net.p5w.dp.common.result.PageResult;
 import net.p5w.dp.entity.Order;
 import net.p5w.dp.mapper.OrderMapper;
 import net.p5w.dp.service.OrderService;
@@ -34,18 +33,18 @@ public class OrderServiceImpl implements OrderService {
      * 分页查询订单（返回脱敏 VO）
      */
     @Override
-    public PageResult<OrderVO> page(OrderQuery query) {
+    public PageInfo<OrderVO> page(OrderQuery query) {
         log.info("分页查询订单：pageNum={}, pageSize={}", query.getPageNum(), query.getPageSize());
 
         PageHelper.startPage(query.getPageNum(), query.getPageSize());
         List<Order> orderList = orderMapper.selectOrderList(query);
-        PageInfo<Order> pageInfo = new PageInfo<>(orderList);
+        PageInfo<Order> entityPageInfo = new PageInfo<>(orderList);
 
         List<OrderVO> voList = orderList.stream()
                 .map(this::convertToOrderVO)
                 .collect(Collectors.toList());
 
-        return PageResult.build(pageInfo.getTotal(), pageInfo.getPageSize(), pageInfo.getPageNum(), voList);
+        return copyPageInfo(entityPageInfo, voList);
     }
 
     /**
@@ -90,5 +89,17 @@ public class OrderServiceImpl implements OrderService {
         OrderVO vo = new OrderVO();
         BeanUtils.copyProperties(order, vo);
         return vo;
+    }
+
+    /**
+     * 将 PageInfo 的分页元数据复制到新的 PageInfo（用于 Entity → VO 转换后保持分页信息）
+     */
+    private <S, T> PageInfo<T> copyPageInfo(PageInfo<S> source, List<T> list) {
+        PageInfo<T> target = new PageInfo<>(list);
+        target.setTotal(source.getTotal());
+        target.setPages(source.getPages());
+        target.setPageNum(source.getPageNum());
+        target.setPageSize(source.getPageSize());
+        return target;
     }
 }

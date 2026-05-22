@@ -5,8 +5,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.github.pagehelper.PageInfo;
+
 import lombok.extern.slf4j.Slf4j;
-import net.p5w.dp.common.result.PageResult;
 import net.p5w.dp.common.result.Result;
 import net.p5w.dp.common.result.ResultCode;
 import net.p5w.dp.common.util.IpUtil;
@@ -37,7 +38,7 @@ public class BaseController {
     }
 
     /** 分页成功返回 */
-    protected <T> Result<PageResult<T>> pageSuccess(PageResult<T> pageData) {
+    protected <T> Result<PageInfo<T>> pageSuccess(PageInfo<T> pageData) {
         return Result.success(pageData);
     }
 
