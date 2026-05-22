@@ -1,5 +1,7 @@
 package net.p5w.dp.service.impl;
 
+import java.util.Date;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
@@ -29,4 +31,8 @@ public class NonceServiceImpl implements NonceService {
         return nonceMapper.selectByPrimaryKey(id);
     }
 
+    @Override
+    public int deleteByCreateTimeBefore(Date threshold) {
+        return nonceMapper.deleteByCreateTimeBefore(threshold);
+    }
 }

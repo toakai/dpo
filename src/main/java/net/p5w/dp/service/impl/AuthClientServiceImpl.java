@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +25,9 @@ public class AuthClientServiceImpl implements AuthClientService {
     @Resource
     private NonceMapper nonceMapper;
 
-    // 5分钟时间有效期
-    private static final long EXPIRE_TIME = 5 * 60 * 1000;
+    /** 签名/nonce 有效期（毫秒），默认 5 分钟，从配置文件读取 */
+    @Value("${auth.expire-time:300000}")
+    private long expireTime;
 
     @Override
     public AuthClient selectByPrimaryKey(Long id) {
@@ -55,7 +57,7 @@ public class AuthClientServiceImpl implements AuthClientService {
             log.warn("时间戳格式错误，timestamp: {}", timestamp);
             return false;
         }
-        if (Math.abs(currentTime - reqTime) > EXPIRE_TIME) {
+        if (Math.abs(currentTime - reqTime) > expireTime) {
             log.warn("时间戳过期，currentTime: {}, reqTime: {}", currentTime, reqTime);
             return false;
         }

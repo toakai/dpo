@@ -18,7 +18,8 @@ import net.p5w.dp.config.IpLimitConfig;
 /**
  * 基于滑动窗口的 IP 限流器
  * <p>
- * 统计任意 60 秒内同一 IP 的请求次数，超过 {@link IpLimitConfig#getMaxPerMinute()} 则拒绝请求。
+ * 统计任意 {@link IpLimitConfig#getWindowSize()} 秒内同一 IP 的请求次数，
+ * 超过 {@link IpLimitConfig#getMaxPerMinute()} 则拒绝请求。
  * 使用 {@link ConcurrentHashMap} 存储各 IP 的时间戳队列，定时清理空队列防止内存泄漏。
  * </p>
  */
@@ -40,11 +41,29 @@ public class IpRateLimiter {
     });
 
     static {
+        // 初始清理任务，后续在 init() 中重新设置实际配置的间隔
         CLEANER.scheduleAtFixedRate(
                 () -> WINDOW.entrySet().removeIf(entry -> entry.getValue().isEmpty()),
                 10, 10, TimeUnit.MINUTES
         );
-        log.info("IP 限流器初始化完成，空队列清理任务已启动");
+    }
+
+    /**
+     * Spring Bean 初始化后，用配置文件的值重新设置清理间隔
+     * <p>
+     * 因为 static 块在 Bean 初始化之前执行，无法访问 @ConfigurationProperties 的值，
+     * 所以需要在此处重新调度。
+     * </p>
+     */
+    @javax.annotation.PostConstruct
+    public void init() {
+        int interval = ipLimitConfig.getCleanInterval();
+        CLEANER.scheduleAtFixedRate(
+                () -> WINDOW.entrySet().removeIf(entry -> entry.getValue().isEmpty()),
+                interval, interval, TimeUnit.MINUTES
+        );
+        log.info("IP 限流器初始化完成：maxPerMinute={}, windowSize={}s, cleanInterval={}min",
+                ipLimitConfig.getMaxPerMinute(), ipLimitConfig.getWindowSize(), interval);
     }
 
     /**
@@ -64,7 +83,7 @@ public class IpRateLimiter {
         }
 
         long now = System.currentTimeMillis();
-        long windowStart = now - 60 * 1000L; // 60 秒滑动窗口
+        long windowStart = now - ipLimitConfig.getWindowSize() * 1000L;
         int max = ipLimitConfig.getMaxPerMinute();
 
         Deque<Long> deque = WINDOW.computeIfAbsent(ip, k -> new LinkedBlockingDeque<>());
@@ -76,12 +95,13 @@ public class IpRateLimiter {
             }
 
             if (deque.size() >= max) {
-                log.warn("IP[{}] 触发限流：60s 内请求 {} 次，上限 {}", ip, deque.size(), max);
+                log.warn("IP[{}] 触发限流：{}s 内请求 {} 次，上限 {}", ip,
+                        ipLimitConfig.getWindowSize(), deque.size(), max);
                 return false;
             }
 
             deque.offerLast(now);
-            log.debug("IP[{}] 允许访问：60s 内已请求 {} 次", ip, deque.size());
+            log.debug("IP[{}] 允许访问：{}s 内已请求 {} 次", ip, ipLimitConfig.getWindowSize(), deque.size());
             return true;
         }
     }

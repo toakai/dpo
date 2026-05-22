@@ -29,4 +29,7 @@
     insert into p5w_nonce (nonce, create_time)
     values (#{nonce,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
   </insert>
+  <delete id="deleteByCreateTimeBefore">
+    delete from p5w_nonce where create_time &lt; #{threshold,jdbcType=TIMESTAMP}
+  </delete>
 </mapper>
