@@ -1,8 +1,10 @@
 package net.p5w.dp.controller;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import javax.annotation.Resource;
@@ -27,7 +29,9 @@ import net.p5w.dp.common.result.PageResult;
 import net.p5w.dp.common.result.Result;
 import net.p5w.dp.common.result.ResultCode;
 import net.p5w.dp.service.InvoiceInfoService;
-import net.p5w.dp.vo.InvoiceInfoVO;/**
+import net.p5w.dp.vo.InvoiceInfoVO;
+
+/**
  * 发票信息控制器
  */
 @Slf4j
@@ -35,7 +39,9 @@ import net.p5w.dp.vo.InvoiceInfoVO;/**
 @RequestMapping("/api/invoice")
 public class InvoiceInfoController extends BaseController {
 
-    /** 上传文件大小上限（单位：字节），从配置文件读取，默认 10MB */
+    /**
+     * 上传文件大小上限（单位：字节），从配置文件读取，默认 10MB
+     */
     @Value("${file.max-size:10485760}")
     private long maxFileSize;
 
@@ -109,7 +115,7 @@ public class InvoiceInfoController extends BaseController {
      * 下载发票附件
      * <p>请求示例：GET /api/invoice/download/1</p>
      *
-     * @param id      发票主键
+     * @param id       发票主键
      * @param response HTTP 响应（直接写入文件流）
      */
     @GetMapping("/download/{id}")
@@ -134,7 +140,7 @@ public class InvoiceInfoController extends BaseController {
         String encodedName;
         try {
             encodedName = URLEncoder.encode(file.getName(), "UTF-8").replace("+", "%20");
-        } catch (java.io.UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             // UTF-8 必定支持，此处不会触发
             encodedName = file.getName();
         }
@@ -143,7 +149,7 @@ public class InvoiceInfoController extends BaseController {
         response.setHeader("Content-Disposition", "attachment; filename=\"" + encodedName + "\"");
 
         // 写入文件流
-        try (java.io.FileInputStream fis = new java.io.FileInputStream(file);
+        try (FileInputStream fis = new FileInputStream(file);
              OutputStream os = response.getOutputStream()) {
             byte[] buffer = new byte[8192];
             int bytesRead;
