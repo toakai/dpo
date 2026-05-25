@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -39,11 +42,16 @@ import net.p5w.dp.vo.InvoiceInfoVO;
 @RequestMapping("/api/invoice")
 public class InvoiceInfoController extends BaseController {
 
-    /**
-     * 上传文件大小上限（单位：字节），从配置文件读取，默认 10MB
-     */
+    /** 上传文件大小上限（单位：字节），从配置文件读取，默认 10MB */
     @Value("${file.max-size:10485760}")
     private long maxFileSize;
+
+    /**
+     * 允许上传的文件扩展名（逗号分隔，不含点号），从配置文件读取
+     * 示例：pdf,jpg,jpeg,png,gif,xlsx,xls,doc,docx
+     */
+    @Value("${file.allowed-types:pdf,jpg,jpeg,png,gif,xlsx,xls,doc,docx}")
+    private String allowedTypes;
 
     @Resource
     private InvoiceInfoService invoiceInfoService;
@@ -96,19 +104,41 @@ public class InvoiceInfoController extends BaseController {
             throw new BizException(ResultCode.BAD_REQUEST);
         }
 
-        // 校验文件大小
+        // 校验文件大小（框架层 MaxUploadSizeExceededException 拦截更大的请求，此处作为双重保障）
         if (file.getSize() > maxFileSize) {
-            throw new BizException(ResultCode.BAD_REQUEST);
+            log.warn("上传文件超过大小限制：size={}, maxSize={}", file.getSize(), maxFileSize);
+            throw new BizException(ResultCode.FILE_TOO_LARGE);
+        }
+
+        // 校验文件类型
+        String originalFilename = file.getOriginalFilename();
+        String ext = getFileExtension(originalFilename);
+        Set<String> allowed = Arrays.stream(allowedTypes.split(","))
+                .map(String::trim).map(String::toLowerCase)
+                .collect(Collectors.toSet());
+        if (!allowed.contains(ext)) {
+            log.warn("上传文件类型不允许：ext={}, allowed={}", ext, allowedTypes);
+            throw new BizException(ResultCode.FILE_TYPE_NOT_ALLOWED);
         }
 
         try {
-            String filePath = invoiceInfoService.uploadFile(file.getOriginalFilename(), file.getBytes());
+            String filePath = invoiceInfoService.uploadFile(originalFilename, file.getBytes());
             logEnd("发票文件上传");
             return success(filePath);
         } catch (IOException e) {
             log.error("读取上传文件失败", e);
             throw new BizException(ResultCode.SERVER_ERROR);
         }
+    }
+
+    /**
+     * 获取文件扩展名（小写，不含点号）；文件名无扩展名或为 null 时返回空字符串
+     */
+    private String getFileExtension(String filename) {
+        if (filename == null || filename.lastIndexOf('.') < 0) {
+            return "";
+        }
+        return filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
     }
 
     /**

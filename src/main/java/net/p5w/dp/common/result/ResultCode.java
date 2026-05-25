@@ -25,6 +25,10 @@ public enum ResultCode {
     PAGE_SIZE_ERROR(400, "每页条数不能小于1"),
     PAGE_SIZE_MAX_ERROR(400, "每页最大支持100条数据"),
 
+    // 文件上传专属提示
+    FILE_TOO_LARGE(400, "上传文件超过大小限制"),
+    FILE_TYPE_NOT_ALLOWED(400, "不支持的文件类型"),
+
     // 服务端异常 5xx
     SERVER_ERROR(500, "服务器繁忙，请稍后重试"),
     DB_ERROR(500, "数据库操作异常"),
